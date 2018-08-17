@@ -27,7 +27,7 @@ else:
     raw_input = input
 
 
-class SendMsgBot(sleekxmpp.ClientXMPP):
+class SendMsgBot2(sleekxmpp.ClientXMPP):
     #Arrays I will need later
     userMessage = ""
     recipentJID = ""
@@ -91,7 +91,7 @@ class SendMsgBot(sleekxmpp.ClientXMPP):
         self.send_presence()
         self.get_roster()
 
-        self.schedule('message_sender', 30, self.message_sender, args=None, kwargs=None, repeat=True)
+        self.schedule('message_sender', 60, self.message_sender, args=None, kwargs=None, repeat=True)
 
     def message(self, msg):
         """
@@ -119,6 +119,18 @@ class SendMsgBot(sleekxmpp.ClientXMPP):
                 print("Message sent!\n")
             else:
                 print("Okay, then.\n")
+        try:
+            sendMessage = input("Would you like to send a message? (y/n): ")
+        except ValueError as err:
+            print(err)
+        if sendMessage == 'y':
+            self.recipient = raw_input("Enter the username (recipient@example.net) of the recipient: ")
+            self.msg = raw_input("Enter a message: \n")
+            self.send_message(mto=self.recipient,
+                          mbody=self.msg,
+                          mtype='chat')
+        else:
+            print("Okay, then.\n")
 
 
 if __name__ == '__main__':
@@ -126,7 +138,7 @@ if __name__ == '__main__':
     print("XMPP CLIENT\nCREATED BY BELL\n")
     helpNeeded = input("For help, enter 'h'.")
     if (helpNeeded == 'h'):
-        print("This is an XMPP client. Every thirty seconds, it will ask you if you wish to send a message. It will also ask you after every message received - but beware, for it will not wait until all unread messages have been received. Messages are also saved to a file.\n")
+        print("This is an XMPP client. Every minute, it will ask you if you wish to send a message. It will also ask you after every message received - but beware, for it will not wait until all unread messages have been received. Messages are also saved to a file.\n")
     # Setup the command line arguments.
     optp = OptionParser()
 
@@ -180,7 +192,7 @@ if __name__ == '__main__':
     # Setup the EchoBot and register plugins. Note that while plugins may
     # have interdependencies, the order in which you register them does
     # not matter.
-    xmpp = SendMsgBot(opts.jid, opts.password, opts.to, opts.message)
+    xmpp = SendMsgBot2(opts.jid, opts.password, opts.to, opts.message)
     xmpp.register_plugin('xep_0030') # Service Discovery
     xmpp.register_plugin('xep_0004') # Data Forms
     xmpp.register_plugin('xep_0060') # PubSub
